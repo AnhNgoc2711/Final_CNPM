@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="/css/admin.css" />
+
+</head>
+
+<body class="main-body">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <aside class="sidebar p-4">
+            <div class="text-2xl font-bold mt-4 mb-8 flex items-center gap-2">
+                <span> <i class="fa-solid fa-coffee"></i> THE AP HOUSE</span>
+            </div>
+            <nav class="flex-1 space-y-2">
+
+                <a href="#" class="sidebar-link" onclick="showSection('menu')">
+                    <span class="material-icons">folder</span> Manage menu
+                </a>
+                <a href="#" class="sidebar-link">
+                    <span class="material-icons">group</span> Clients
+                </a>
+                <a href="#" class="sidebar-link">
+                    <span class="material-icons">bar_chart</span> Analytics
+                </a>
+                <a href="#" class="sidebar-link">
+                    <span class="material-icons">event</span> Booking
+                </a>
+            </nav>
+            <div class="mt-auto space-y-1">
+                <a href="/" class="sidebar-link">
+                    <span class="material-icons">home</span> Dashboard
+                </a>
+                <a href="#" class="sidebar-link">
+                    <span class="material-icons">help</span> Feedback
+                </a>
+                <a href="#" class="sidebar-link" onclick="logoutAndRedirect()">
+                    <span><i class="bi bi-box-arrow-right me-2"></i></span> Log out
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-4 md:p-6 main-content">
+            <div id="dashboard" class="section ">
+                <div class="flex justify-between items-center mb-6">
+                    <input type="text" placeholder="Search" class="px-4 py-2 border border-gray-300 rounded-xl w-1/3" />
+                    <div class="flex items-center gap-4">
+                        <span class="material-icons">notifications</span>
+                        <div class="flex items-center gap-2">
+                            <i class="bi bi-person-circle text-xl"></i>
+                            <span class="font-semibold text-lg">Admin</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="menu" class="section active">
+                <div class="mb-3">
+                    <button class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                        onclick="openAddForm()">
+                        <i class="bi bi-plus-circle me-2"></i> Add New Item
+                    </button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white shadow rounded-lg overflow-hidden">
+                        <thead class="bg-gray-200">
+                            <tr>
+                                <th class="text-left px-4 py-2">ID</th>
+                                <th class="text-left px-4 py-2">Image</th>
+                                <th class="text-left px-4 py-2">Name</th>
+                                <th class="text-left px-4 py-2">Description</th>
+                                <th class="text-left px-4 py-2">Price</th>
+                                <th class="text-left px-4 py-2">Category</th>
+                                <th class="text-left px-4 py-2">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+
+
+    <!-- Modal for Add/Edit Item -->
+    <div id="menuModal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl shadow-lg w-full max-w-md p-6 relative animate-fade-in">
+            <h2 id="modalTitle" class="text-2xl font-bold mb-4 text-center text-[#3d2700]">Add Menu Item</h2>
+            <form id="menuForm">
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Name</label>
+                    <input id="name" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"
+                        required />
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Description</label>
+                    <textarea id="description" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"
+                        required></textarea>
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Price ($)</label>
+                    <input id="price" type="number" step="0.01" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1"
+                        required />
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Image URL</label>
+                    <input id="image" type="text" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1" />
+                </div>
+                <div class="mb-4">
+                    <label class="block font-semibold text-[#3d2700]">Category</label>
+                    <select id="category" class="w-full border border-gray-300 rounded-xl px-4 py-2 mt-1">
+                        <option value="coffee">Coffee</option>
+                        <option value="tea">Tea</option>
+                        <option value="matcha">Matcha</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-2 mt-6">
+                    <button type="button" onclick="closeModal()"
+                        class="px-4 py-2 bg-gray-300 rounded-xl hover:bg-gray-400">Cancel</button>
+                    <button type="submit" id="modalSubmitBtn"
+                        class="px-4 py-2 bg-green-700 text-white rounded-xl hover:bg-green-800">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/admin.js"></script>
+</body>
+</html>
